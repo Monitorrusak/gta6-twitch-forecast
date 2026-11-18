@@ -250,7 +250,10 @@ export const unlockClass = (text: string | undefined | null): UnlockClass => {
 export type PlatformClass = 'console' | 'pc' | 'unknown';
 
 export const platformClass = (text: string | undefined | null): PlatformClass => {
-  const t = text ?? '';
+  // a PC version that is absent or later ("no PC until 2027", "PC 2019-11", "PC later") is not a PC launch
+  const t = (text ?? '')
+    .replace(/\b(?:no|without|not on)\s+PC\b[^,;)]*/gi, ' ')
+    .replace(/\bPC\s*(?:version\s*)?(?:later|until|in\s+20\d\d|\(?20\d\d)[^,;)]*/gi, ' ');
   if (/console[- ]only|consoles? only/i.test(t)) return 'console';
   if (/\bPC\b|Steam|Stadia|Windows/i.test(t)) return 'pc';
   if (/PS\s?\d|PlayStation|Xbox|Switch/i.test(t)) return 'console';
